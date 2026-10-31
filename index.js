@@ -2,11 +2,23 @@
 // Ses données sont dans le dossier du plugin, que NeoBase sauvegarde (synchro cloud et sauvegardes) ; à la première ouverture elle reprend ce que tu avais dans NeoBase.
 // Elle demande l'accès complet pour utiliser les outils d'interface de NeoBase. NeoBase ne l'ouvre que si elle est signée.
 const HTML = "<div class=\"appWrap\">\n      <div class=\"agHead\"><span class=\"label\">Système</span><span id=\"sysName\" class=\"hint\"></span></div>\n      <div class=\"sysGrid\">\n        <div class=\"sysCard px\"><span class=\"label\">Processeur</span><div class=\"sysBig\" id=\"sysCpu\">…</div><div class=\"hint\" id=\"sysCpuInfo\"></div></div>\n        <div class=\"sysCard px\"><span class=\"label\">Mémoire</span><div class=\"sysBig\" id=\"sysMem\">…</div><div class=\"hint\" id=\"sysMemInfo\"></div></div>\n        <div class=\"sysCard px\"><span class=\"label\">Réseau</span><div class=\"sysBig\" id=\"sysNet\">…</div><div class=\"hint\" id=\"sysNetInfo\"></div></div>\n        <div class=\"sysCard px\"><span class=\"label\" id=\"sysTempLbl\">Température</span><div class=\"sysBig\" id=\"sysTemp\">…</div><div class=\"hint\" id=\"sysTempInfo\"></div></div>\n      </div>\n      <div class=\"sysCard px\"><div class=\"chHead\"><span class=\"label\">Processeur et mémoire · 5 dernières minutes</span><span class=\"legend\" id=\"lgUse\"></span></div>\n        <div class=\"chart\"><canvas id=\"chUse\"></canvas><div class=\"chTip\"></div></div></div>\n      <div class=\"stCols\">\n        <div class=\"sysCard px\"><div class=\"chHead\"><span class=\"label\">Réseau · 5 dernières minutes</span><span class=\"legend\" id=\"lgNet\"></span></div>\n          <div class=\"chart small\"><canvas id=\"chNet\"></canvas><div class=\"chTip\"></div></div></div>\n        <div class=\"sysCard px\"><div class=\"chHead\"><span class=\"label\">Cœurs du processeur</span><span class=\"hint\" id=\"sysCoresInfo\"></span></div><div id=\"sysCores\"></div></div>\n      </div>\n      <div class=\"stCols\">\n        <div class=\"sysCard px\"><span class=\"label\">Mémoire par programme</span><div id=\"sysProcs\"></div></div>\n        <div class=\"sysCard px\"><span class=\"label\">Disques</span><div id=\"sysDisks\"></div><span class=\"label\" style=\"margin-top:8px\">Ce PC</span><div id=\"sysInfo\"></div></div>\n      </div>\n    </div>";
+/*CSS-MOVED*/ const CSS = `.chHead{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.legend{margin-left:auto;display:flex;gap:16px;font-size:14px;color:var(--lilac)}
+.legend i{display:inline-block;width:10px;height:10px;margin-right:6px;background:var(--c)}
+.chTip{position:absolute;top:4px;pointer-events:none;display:none;padding:8px 10px;background:var(--win);box-shadow:0 0 0 2px var(--line2);font-size:13px;color:#fff;white-space:nowrap;line-height:1.5}
+.chTip b{display:block;font:7px var(--title);color:var(--muted);letter-spacing:1px;margin-bottom:4px}
+.chTip i{display:inline-block;width:8px;height:8px;margin-right:6px;background:var(--c)}
+#sysCores{display:flex;align-items:flex-end;gap:3px;height:120px;padding-top:6px}
+#sysCores div{flex:1;background:var(--violet);min-height:2px}
+#sysCores div:hover{background:var(--pink)}
+#sysInfo .sysRow{grid-template-columns:120px 1fr}
+`;  // le style de ce plugin (il utilise les variables du thème de NeoBase)
 export default async function (ctx) {
   const view = ctx.view;
   if (!ctx.host) { view.textContent = "Ce plugin doit être approuvé par NeoBase pour s'ouvrir."; return; }
   const host = ctx.host, { el, toast, sfx, ask, newTab, pixIcon, PIX, WX } = host;
   const folder = ctx.folder, legacy = ctx.legacy || {};
+  ctx.host.addStyle(CSS);
   view.innerHTML = HTML;
   const $ = id => id === "sysApp" ? view : (view.querySelector('#' + id) || document.getElementById(id));  // les identifiants de ta vue d'abord, puis ceux de la page (fenêtres, menus)
   const doc = async n => { try { return await folder.read(n); } catch { return null; } };

@@ -1,7 +1,7 @@
 {
   "id": "neobase.systeme",
   "name": "Système",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "NDesumeur",
   "description": "Le processeur, la mémoire, la température, les disques et le réseau de ton PC, en direct sur 5 minutes.",
   "icon": "icon.png",
