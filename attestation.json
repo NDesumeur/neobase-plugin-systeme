@@ -1,0 +1,9 @@
+{
+  "pluginId": "neobase.systeme",
+  "repo": "NDesumeur/neobase-plugin-systeme",
+  "version": "1.0.1",
+  "sha256": "43c8b9852b09051b21d79b5f1cba9bb928ab1f9cd2d07ab15c010f147e3e29da",
+  "approvedAt": "2026-10-31T17:51:20.983Z",
+  "neobase": ">=4.0.0",
+  "signature": "jiCr+F07Qsq7UUjyUeTzpVtnNYBI6OJf8PHZcVS6OHxda2cR8epQDEICYG6khDXFIm6+doN12OMhSYVMR232CQ=="
+}
