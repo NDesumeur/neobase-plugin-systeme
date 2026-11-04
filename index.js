@@ -1,6 +1,6 @@
 // Système : ton appli d'origine (HTML et code inchangés), livrée en plugin.
-// Ses données sont dans le dossier du plugin, que NeoBase sauvegarde (synchro cloud et sauvegardes) ; à la première ouverture elle reprend ce que tu avais dans NeoBase.
-// Elle tourne dans le bac à sable de NeoBase, avec ses outils d'interface (ctx.host) et seulement les autorisations de son plugin.json.
+// Ses données sont dans le dossier du plugin, que NeoDex sauvegarde (synchro cloud et sauvegardes) ; à la première ouverture elle reprend ce que tu avais dans NeoDex.
+// Elle tourne dans le bac à sable de NeoDex, avec ses outils d'interface (ctx.host) et seulement les autorisations de son plugin.json.
 const HTML = "<div class=\"appWrap\">\n      <div class=\"agHead\"><span class=\"label\">Système</span><span id=\"sysName\" class=\"hint\"></span></div>\n      <div class=\"sysGrid\">\n        <div class=\"sysCard px\"><span class=\"label\">Processeur</span><div class=\"sysBig\" id=\"sysCpu\">…</div><div class=\"hint\" id=\"sysCpuInfo\"></div></div>\n        <div class=\"sysCard px\"><span class=\"label\">Mémoire</span><div class=\"sysBig\" id=\"sysMem\">…</div><div class=\"hint\" id=\"sysMemInfo\"></div></div>\n        <div class=\"sysCard px\"><span class=\"label\">Réseau</span><div class=\"sysBig\" id=\"sysNet\">…</div><div class=\"hint\" id=\"sysNetInfo\"></div></div>\n        <div class=\"sysCard px\"><span class=\"label\" id=\"sysTempLbl\">Température</span><div class=\"sysBig\" id=\"sysTemp\">…</div><div class=\"hint\" id=\"sysTempInfo\"></div></div>\n      </div>\n      <div class=\"sysCard px\"><div class=\"chHead\"><span class=\"label\">Processeur et mémoire · 5 dernières minutes</span><span class=\"legend\" id=\"lgUse\"></span></div>\n        <div class=\"chart\"><canvas id=\"chUse\"></canvas><div class=\"chTip\"></div></div></div>\n      <div class=\"stCols\">\n        <div class=\"sysCard px\"><div class=\"chHead\"><span class=\"label\">Réseau · 5 dernières minutes</span><span class=\"legend\" id=\"lgNet\"></span></div>\n          <div class=\"chart small\"><canvas id=\"chNet\"></canvas><div class=\"chTip\"></div></div></div>\n        <div class=\"sysCard px\"><div class=\"chHead\"><span class=\"label\">Cœurs du processeur</span><span class=\"hint\" id=\"sysCoresInfo\"></span></div><div id=\"sysCores\"></div></div>\n      </div>\n      <div class=\"stCols\">\n        <div class=\"sysCard px\"><span class=\"label\">Mémoire par programme</span><div id=\"sysProcs\"></div></div>\n        <div class=\"sysCard px\"><span class=\"label\">Disques</span><div id=\"sysDisks\"></div><span class=\"label\" style=\"margin-top:8px\">Ce PC</span><div id=\"sysInfo\"></div></div>\n      </div>\n    </div>";
 /*CSS-MOVED*/ const CSS = `.chHead{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .legend{margin-left:auto;display:flex;gap:16px;font-size:14px;color:var(--lilac)}
@@ -12,10 +12,10 @@ const HTML = "<div class=\"appWrap\">\n      <div class=\"agHead\"><span class=\
 #sysCores div{flex:1;background:var(--violet);min-height:2px}
 #sysCores div:hover{background:var(--pink)}
 #sysInfo .sysRow{grid-template-columns:120px 1fr}
-`;  // le style de ce plugin (il utilise les variables du thème de NeoBase)
+`;  // le style de ce plugin (il utilise les variables du thème de NeoDex)
 export default async function (ctx) {
   const view = ctx.view;
-  if (!ctx.host) { view.textContent = "Ce plugin doit être approuvé par NeoBase pour s'ouvrir."; return; }
+  if (!ctx.host) { view.textContent = "Ce plugin doit être approuvé par NeoDex pour s'ouvrir."; return; }
   const host = ctx.host, { el, toast, sfx, ask, newTab, pixIcon, PIX, WX } = host;
   const folder = ctx.folder, legacy = ctx.legacy || {};
   ctx.host.addStyle(CSS);
@@ -96,7 +96,7 @@ async function sysTick() {
   $('sysNet').textContent = s.down == null ? '…' : '↓ ' + rate(s.down);
   $('sysNetInfo').textContent = s.up == null ? 'Mesure en cours…' : '↑ ' + rate(s.up) + ' envoyés';
   $('sysTemp').textContent = s.temp == null ? '—' : s.temp + ' °C';
-  $('sysTempInfo').textContent = s.temp === undefined ? 'Mesure en cours…' : s.temp === null ? "Windows ne donne pas la température à NeoBase sur ce PC (souvent réservée aux administrateurs)." : 'Capteur de la carte mère';
+  $('sysTempInfo').textContent = s.temp === undefined ? 'Mesure en cours…' : s.temp === null ? "Windows ne donne pas la température à NeoDex sur ce PC (souvent réservée aux administrateurs)." : 'Capteur de la carte mère';
   lineChart($('chUse'), [{label: 'Processeur', color: '--pink', data: hist.cpu, fmt: pct}, {label: 'Mémoire', color: '--violet', data: hist.mem, fmt: pct}], 100);
   lineChart($('chNet'), [{label: 'Reçu', color: '--pink', data: hist.down, fmt: rate}, {label: 'Envoyé', color: '--violet', data: hist.up, fmt: rate}], null);
   if (s.perCore) {
@@ -108,7 +108,7 @@ async function sysTick() {
   $('sysProcs').replaceChildren(...(s.procs.length ? s.procs.map(p => barRow(p.name, p.mem / topMem * 100, mo(p.mem))) : [el('div', 'hint', 'Lecture en cours…')]));
   $('sysDisks').replaceChildren(...s.disks.map(k => { const used = 1 - k.free / k.total; return barRow(k.name, used * 100, gb(k.free) + ' libres sur ' + gb(k.total), '', used > .9); }));
   const up = s.uptime, d = up / 86400 | 0, h = up % 86400 / 3600 | 0, m = up % 3600 / 60 | 0;
-  const info = [['Nom du PC', s.host], ['Windows', s.osName + ' (' + s.osRelease + ')'], ['Allumé depuis', (d ? d + ' j ' : '') + h + ' h ' + String(m).padStart(2, '0')], ['NeoBase utilise', mo(s.self) + ' de mémoire']];
+  const info = [['Nom du PC', s.host], ['Windows', s.osName + ' (' + s.osRelease + ')'], ['Allumé depuis', (d ? d + ' j ' : '') + h + ' h ' + String(m).padStart(2, '0')], ['NeoDex utilise', mo(s.self) + ' de mémoire']];
   const desktop = !battery || (battery.charging && battery.level === 1 && battery.dischargingTime === Infinity);  // a PC without battery reports "full and charging"
   if (!desktop) info.push(['Batterie', pct(battery.level * 100) + (battery.charging ? ' · en charge' : '')]);
   $('sysInfo').replaceChildren(...info.map(([k, v]) => { const r = el('div', 'sysRow'); r.append(el('div', 'v', k), el('div', 'tn', v)); return r; }));
