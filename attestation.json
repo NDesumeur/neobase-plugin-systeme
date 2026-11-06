@@ -1,9 +1,9 @@
 {
   "pluginId": "neodex.systeme",
   "repo": "NDesumeur/neodex-plugin-systeme",
-  "version": "1.1.0",
-  "sha256": "f58129220133fe75277e51ac750fc332475da846f1b10bd11a3e8cbfa28bfa1e",
-  "approvedAt": "2026-11-04T10:05:10.929Z",
+  "version": "1.1.1",
+  "sha256": "9ef9ecde90cf123743e03782458d1109c06a34d57a04820828d5988207377095",
+  "approvedAt": "2026-11-06T21:35:48.029Z",
   "neobase": ">=4.0.0",
-  "signature": "K9lZ+4zog0IV/VPb1+jRIDmeG4NxXAGfS29Iio7j0Rw+ZM7iiyTVf4W6C7vh/3qdLhbvBJDFByx4riFYVe7IDw=="
+  "signature": "Io+RAsC4G0GcNzTVbe5baZblgXvbfgkcdujrJyW/dmS4zBzVUuGCkJIa/qC6a1ELD/yCAScSypmaj88LnTiyBw=="
 }
